@@ -5,6 +5,7 @@ export default function Home() {
   const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [model, setModel] = useState('gpt-4o'); // default model
 
   const sendMessage = async () => {
     const userMessage = input.trim();
@@ -14,18 +15,36 @@ export default function Home() {
     setInput('');
     setLoading(true);
 
-    const res = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message: userMessage,
-        sessionId: 1,
-        userId: 1
-      }),
-    });
+    try {
+      if (model === 'dall-e-3') {
+        const res = await fetch('/api/image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: userMessage }),
+        });
+        const data = await res.json();
+        setMessages(prev => [
+          ...prev,
+          { role: 'assistant', content: `<img src="${data.imageUrl}" alt="Generated Image" class="rounded-lg"/>` }
+        ]);
+      } else {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: userMessage,
+            sessionId: 1,
+            userId: 1,
+            model,
+          }),
+        });
+        const data = await res.json();
+        setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
+      }
+    } catch (err) {
+      setMessages(prev => [...prev, { role: 'assistant', content: '⚠️ Error: Unable to generate response.' }]);
+    }
 
-    const data = await res.json();
-    setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
     setLoading(false);
   };
 
@@ -34,21 +53,30 @@ export default function Home() {
       <div className="max-w-2xl mx-auto space-y-6">
         <h1 className="text-4xl font-bold text-blue-600 dark:text-blue-400 text-center">💬 Orion L1 Chat</h1>
 
+        <div className="flex justify-end mb-4">
+          <select
+            value={model}
+            onChange={e => setModel(e.target.value)}
+            className="border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-black dark:text-white rounded-lg px-3 py-2"
+          >
+            <option value="gpt-4o">GPT-4o (Fast & Multimodal)</option>
+            <option value="gpt-4-turbo">GPT-4 Turbo</option>
+            <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+            <option value="dall-e-3">DALL·E 3 (Image)</option>
+          </select>
+        </div>
+
         <div className="space-y-4">
           {messages.map((msg, i) => (
-            <div
-              key={i}
-              className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
+            <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div
                 className={`rounded-xl px-4 py-3 max-w-[75%] text-sm shadow-md ${
                   msg.role === 'user'
                     ? 'bg-blue-600 text-white dark:bg-blue-500'
                     : 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-100'
                 }`}
-              >
-                {msg.content}
-              </div>
+                dangerouslySetInnerHTML={{ __html: msg.content }}
+              />
             </div>
           ))}
           {loading && (

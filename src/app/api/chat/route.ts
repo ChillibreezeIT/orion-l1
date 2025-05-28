@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
 
     // Return the AI reply
     return NextResponse.json({ reply });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('❌ API Error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }

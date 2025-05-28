@@ -7,22 +7,13 @@ const openai = new OpenAI({
 
 export async function POST(req: NextRequest) {
   try {
-    const { message, sessionId, userId } = await req.json();
+    const { message, sessionId = 1, userId = 1 } = await req.json();
 
-    if (!message || !sessionId || !userId) {
-      return NextResponse.json({ error: 'Missing required data.' }, { status: 400 });
+    if (!message) {
+      return NextResponse.json({ error: 'Missing message.' }, { status: 400 });
     }
 
-    // Get AI reply from OpenAI
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      messages: [{ role: 'user', content: message }],
-    });
-
-    const reply = completion.choices?.[0]?.message?.content?.trim() || '⚠️ No response from AI.';
-    console.log('✅ OpenAI Reply:', reply);
-
-    // Supabase config from environment
+    // Prepare Supabase API access
     const supabaseUrl = process.env.SUPABASE_URL!;
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
     const headers = {
@@ -31,7 +22,30 @@ export async function POST(req: NextRequest) {
       'Authorization': `Bearer ${supabaseKey}`
     };
 
-    // Save user message
+    // 1. Ensure user exists
+    await fetch(`${supabaseUrl}/rest/v1/users`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify([{ id: userId, name: 'Guest' }])
+    });
+
+    // 2. Ensure session exists
+    await fetch(`${supabaseUrl}/rest/v1/chat_sessions`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify([{ id: sessionId, user_id: userId }])
+    });
+
+    // 3. Get reply from OpenAI
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-3.5-turbo',
+      messages: [{ role: 'user', content: message }],
+    });
+
+    const reply = completion.choices?.[0]?.message?.content?.trim() || '⚠️ No response from AI.';
+    console.log('✅ OpenAI Reply:', reply);
+
+    // 4. Save user message
     await fetch(`${supabaseUrl}/rest/v1/messages`, {
       method: 'POST',
       headers,
@@ -40,7 +54,7 @@ export async function POST(req: NextRequest) {
       ])
     });
 
-    // Save AI reply
+    // 5. Save AI reply
     await fetch(`${supabaseUrl}/rest/v1/messages`, {
       method: 'POST',
       headers,

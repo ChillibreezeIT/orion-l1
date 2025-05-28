@@ -41,7 +41,7 @@ export default function Home() {
         const data = await res.json();
         setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
       }
-    } catch (err) {
+    } catch {
       setMessages(prev => [...prev, { role: 'assistant', content: '⚠️ Error: Unable to generate response.' }]);
     }
 

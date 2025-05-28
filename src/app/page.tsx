@@ -1,5 +1,8 @@
 'use client';
 import { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeHighlight from 'rehype-highlight';
 
 export default function Home() {
   const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);
@@ -33,7 +36,7 @@ export default function Home() {
           ...prev,
           {
             role: 'assistant',
-            content: `<img src="${data.imageUrl}" alt="Generated Image" class="rounded-lg mt-2"/>`,
+            content: `![Generated Image](${data.imageUrl})`,
           },
         ]);
       } else {
@@ -74,21 +77,24 @@ export default function Home() {
         </select>
       </div>
 
-      {/* Message Window */}
+      {/* Messages */}
       <div className="w-full max-w-4xl flex-1 overflow-y-auto space-y-4 mb-6">
         {messages.map((msg, i) => (
-          <div
-            key={i}
-            className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-          >
+          <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div
-              className={`rounded-lg px-4 py-3 max-w-2xl text-sm whitespace-pre-wrap ${
+              className={`prose prose-invert max-w-2xl text-sm px-4 py-3 rounded-lg ${
                 msg.role === 'user'
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-800 text-gray-100'
               }`}
-              dangerouslySetInnerHTML={{ __html: msg.content }}
-            />
+            >
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeHighlight]}
+              >
+                {msg.content}
+              </ReactMarkdown>
+            </div>
           </div>
         ))}
         {loading && (

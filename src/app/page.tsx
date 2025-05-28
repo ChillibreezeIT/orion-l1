@@ -86,6 +86,11 @@ export default function Home() {
     setMessages([]);
   };
 
+  const startNewChat = () => {
+    setMessages([]);
+    setInput('');
+  };
+
   const sendMessage = async (customMessage?: string) => {
     const userMessage = (customMessage ?? input).trim();
     if (!userMessage) return;
@@ -93,6 +98,14 @@ export default function Home() {
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     setInput('');
     setLoading(true);
+
+    // Find the last Q&A pair
+    let contextPrompt = userMessage;
+    const lastUserMsg = messages.slice().reverse().find(m => m.role === 'user');
+    const lastAssistantMsg = messages.slice().reverse().find(m => m.role === 'assistant');
+    if (lastUserMsg && lastAssistantMsg) {
+      contextPrompt = `Previous Q: ${lastUserMsg.content}\nPrevious A: ${lastAssistantMsg.content}\nFollow-up: ${userMessage}`;
+    }
 
     try {
       if (model === 'dall-e-3') {
@@ -114,7 +127,7 @@ export default function Home() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            message: userMessage,
+            message: contextPrompt,
             sessionId: 1,
             userId: 1,
             model,
@@ -139,7 +152,10 @@ export default function Home() {
             <span className="text-2xl">🌐</span>
             <span className="font-bold text-lg tracking-wide">Orion L1</span>
           </div>
-          <button className="w-full flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg mb-6 transition">
+          <button
+            className="w-full flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg mb-6 transition"
+            onClick={startNewChat}
+          >
             <FiPlus /> Start New
           </button>
           <div className="mb-4">

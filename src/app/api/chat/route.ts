@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
+console.log('Supabase URL present:', !!process.env.SUPABASE_URL);
+console.log('Supabase Key present:', !!process.env.SUPABASE_SERVICE_ROLE_KEY);
+console.log('OpenAI Key present:', !!process.env.OPENAI_API_KEY);
+
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
 });

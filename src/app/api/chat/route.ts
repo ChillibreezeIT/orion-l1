@@ -36,6 +36,7 @@ export async function POST(req: NextRequest) {
     });
 
     // Return the AI reply
+    // Fixing redeploy issue
     return NextResponse.json({ reply });
   } catch (error: unknown) {
     console.error('❌ API Error:', error);

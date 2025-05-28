@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
-import { FiSend, FiTrash2, FiArrowDown, FiMessageSquare, FiImage, FiCode, FiGlobe, FiSearch, FiHelpCircle, FiDollarSign, FiPlus, FiFileText, FiBarChart2, FiLink, FiUser } from 'react-icons/fi';
+import { FiSend, FiTrash2, FiArrowDown, FiMessageSquare, FiImage, FiCode, FiGlobe, FiSearch, FiHelpCircle, FiPlus, FiFileText, FiBarChart2, FiLink, FiUser } from 'react-icons/fi';
 
 const starterPrompts = [
   {

@@ -9,52 +9,52 @@ const starterPrompts = [
   {
     icon: <FiFileText className="w-6 h-6 text-pink-400" />,
     label: 'Help me write',
-    pro: false,
+    value: 'Can you help me write a professional email to my boss about requesting time off?'
   },
   {
     icon: <FiImage className="w-6 h-6 text-purple-400" />,
     label: 'Create images',
-    pro: true,
+    value: 'Create an image of a futuristic city skyline at sunset.'
   },
   {
     icon: <FiCode className="w-6 h-6 text-blue-400" />,
     label: 'Code',
-    pro: false,
+    value: 'Write a Python function to reverse a string.'
   },
   {
     icon: <FiGlobe className="w-6 h-6 text-green-400" />,
     label: 'Analyze image',
-    pro: true,
+    value: 'Analyze the content of this image.'
   },
   {
     icon: <FiLink className="w-6 h-6 text-indigo-400" />,
     label: 'Summarize link',
-    pro: true,
+    value: 'Summarize the main points of this article: [paste link here]'
   },
   {
     icon: <FiHelpCircle className="w-6 h-6 text-purple-300" />,
     label: 'Get advice',
-    pro: false,
+    value: 'What advice do you have for improving productivity while working from home?'
   },
   {
     icon: <FiFileText className="w-6 h-6 text-red-400" />,
     label: 'Process doc',
-    pro: true,
+    value: 'Extract the key information from this document.'
   },
   {
     icon: <FiBarChart2 className="w-6 h-6 text-orange-400" />,
     label: 'Analyze data',
-    pro: true,
+    value: 'Analyze this dataset and provide insights.'
   },
   {
     icon: <FiMessageSquare className="w-6 h-6 text-pink-400" />,
     label: 'Brainstorm',
-    pro: false,
+    value: 'Brainstorm ideas for a new mobile app.'
   },
   {
     icon: <FiSearch className="w-6 h-6 text-pink-400" />,
     label: 'Web search',
-    pro: false,
+    value: 'Search the web for the latest news on AI advancements.'
   },
 ];
 
@@ -137,7 +137,7 @@ export default function Home() {
         <div>
           <div className="flex items-center gap-3 mb-8">
             <span className="text-2xl">🌐</span>
-            <span className="font-bold text-lg tracking-wide">Chatly</span>
+            <span className="font-bold text-lg tracking-wide">Orion L1</span>
           </div>
           <button className="w-full flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg mb-6 transition">
             <FiPlus /> Start New
@@ -153,17 +153,6 @@ export default function Home() {
               </button>
               <button className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-800 transition">
                 <FiSearch /> AI Search Engine
-              </button>
-            </nav>
-          </div>
-          <div className="mb-4">
-            <div className="text-xs text-gray-400 mb-2">Others</div>
-            <nav className="flex flex-col gap-1">
-              <button className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-800 transition">
-                <FiHelpCircle /> Support
-              </button>
-              <button className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-800 transition">
-                <FiDollarSign /> Pricing Plans
               </button>
             </nav>
           </div>
@@ -216,10 +205,8 @@ export default function Home() {
                   <button
                     key={i}
                     className="flex flex-col items-center justify-center bg-gray-800 hover:bg-gray-700 rounded-2xl p-5 shadow-md transition group relative"
+                    onClick={() => setInput(prompt.value)}
                   >
-                    {prompt.pro && (
-                      <span className="absolute top-2 right-2 bg-blue-600 text-xs text-white px-2 py-0.5 rounded-full font-semibold">Pro</span>
-                    )}
                     <div className="mb-2 group-hover:scale-110 transition-transform">
                       {prompt.icon}
                     </div>
